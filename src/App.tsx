@@ -1,18 +1,26 @@
-
-
-
 import type { ReactNode } from "react";
 import { useMemo, useState, useEffect } from "react";
 import { Search, User, Mail, Phone, MapPin, CheckCircle2 } from 'lucide-react';
 
-// Assets
+// --- ASSETS LOGO & SOCIAUX ---
 import ter from './assets/ter.jpg';
 import facebook from './assets/facebook.png';
 import instagram from './assets/instagram.png';
 import linkedin from './assets/linkedin.png';
 
-// --- CONFIGURATION ---
-const ITEMS_PER_PAGE = 6; // Tu peux changer ce nombre pour afficher 4, 6, 8... terrains par page
+// --- IMPORT DES IMAGES TERRAINS (AVEC LES BONNES EXTENSIONS) ---
+import img1 from './assets/1.png';
+import img2 from './assets/2.jpg';
+import img3 from './assets/3.JPG';
+import img4 from './assets/4.jpg';
+import img5 from './assets/5.png';
+import img6 from './assets/6.png';
+import img7 from './assets/7.jpg';
+import img17 from './assets/17.png';
+import img19 from './assets/19.png';
+import img20 from './assets/20.png';
+
+const ITEMS_PER_PAGE = 6; 
 
 // --- TRADUCTIONS ---
 const translations = {
@@ -59,11 +67,11 @@ const translations = {
     heroBtn: "Vedi le opportunità", stats1: "Terreni a Nosy Be", stats2: "Volume gestito", stats3: "Soddisfazione",
     listingsTitle: "Opportunità in primo piano", listingsSub: "Terreni verificati e pronti per la firma",
     sortAsc: "Prezzo crescente", sortDesc: "Prezzo decrescente", cardBtn: "Richiedi scheda dettagliata",
-    contactTitle: "Parliamo del tuo progetto.", contactDesc: "Parla con un esperto basato a Nosy Be per obtenir piste concrete in 24 ore.",
+    contactTitle: "Parliamo del tuo projetto.", contactDesc: "Parla con un esperto basato a Nosy Be per obtenir piste concrete in 24 ore.",
     formName: "Nome completo", formEmail: "Email", formTel: "Telefono / WhatsApp", formMsg: "Il tuo projetto...", formBtn: "Invia richiesta",
     howItWorksTitle: "Un'esperienza pensata per Nosy Be.", howItWorksDesc: "Tutto è centralizzato con un team locale qui conosce perfettamente le specificità del Madagascar.",
     step1Title: "Strategia fondiaria", step1Desc: "Budget, posizione e utilizzo (villa, hotel, resort).",
-    step2Title: "Selezione mirata", step2Desc: "Pre-qualificazione legale e analisi del potenziale.",
+    step2Title: "Selezione mirata", step2Desc: "Pre-qualificazione legale e analyse del potenziale.",
     step3Title: "Acquisizione", step3Desc: "Supporto notarile e messa in sicurezza dell'atto.",
     cookieTitle: "Un piccolo cookie per la strada?", cookieDesc: "Questo sito registra i cookie per offrirti la meilleure esperienza di navigazione possible.",
     cookieChoice: "Scelgo", cookieDecline: "No grazie", cookieAccept: "OK per me",
@@ -78,14 +86,16 @@ type LandCategory = "Résidentiel" | "Commercial" | "Touristique";
 type LandListing = { id: number; title: string; country: string; city: string; price: string; size: string; category: LandCategory; tag?: string; imageUrl: string; };
 
 const MOCK_LISTINGS: LandListing[] = [
-  { id: 1, title: "Terrain pied dans l’eau à Nosy Be", country: "Madagascar", city: "Nosy Be – Andilana", price: "2500 €", size: "3 200 m²", category: "Résidentiel", tag: "Face à la mer", imageUrl: "https://images.pexels.com/photos/462162/pexels-photo-462162.jpeg?auto=compress&cs=tinysrgb&w=1200" },
-  { id: 2, title: "Terrain touristique pour écolodge", country: "Madagascar", city: "Nosy Be – Ambatoloaka", price: "5 000 €", size: "5 800 m²", category: "Touristique", tag: "Idéal projet hôtelier", imageUrl: "https://images.pexels.com/photos/325944/pexels-photo-325944.jpeg?auto=compress&cs=tinysrgb&w=1200" },
-  { id: 3, title: "Terrain pour complexe hôtelier vue 180°", country: "Madagascar", city: "Nosy Be – Mont Passot", price: "6 000 €", size: "1,8 ha", category: "Touristique", tag: "Vue panoramique", imageUrl: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1200" },
-  { id: 4, title: "Terrain résidentiel proche plage", country: "Madagascar", city: "Nosy Be – Madirokely", price: "4 000 €", size: "1 050 m²", category: "Résidentiel", imageUrl: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=1200" },
-  { id: 5, title: "Terrain commercial à nosy be", country: "Madagascar", city: "Antsirabe", price: "3 500 €", size: "2 100 m²", category: "Commercial", imageUrl: "https://images.pexels.com/photos/1427328/pexels-photo-1427328.jpeg?auto=compress&cs=tinysrgb&w=1300" },
-  { id: 6, title: "Terrain résidentiel à madirokely", country: "Madagascar", city: "Mahajanga – Ambatondrazaka", price: "3 200 €", size: "1 500 m²", category: "Résidentiel", imageUrl: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=1400" },
-  { id: 7, title: "Exemple Terrain supplémentaire", country: "Madagascar", city: "Nosy Be – Ambaro", price: "7 500 €", size: "4 000 m²", category: "Touristique", imageUrl: "https://images.pexels.com/photos/462162/pexels-photo-462162.jpeg?auto=compress&cs=tinysrgb&w=1500" },
-    { id: 8, title: "Exemple Terrain supplémentaire", country: "Madagascar", city: "Nosy Be – Ambaro", price: "7 500 €", size: "4 000 m²", category: "Touristique", imageUrl: "https://images.pexels.com/photos/462162/pexels-photo-462162.jpeg?auto=compress&cs=tinysrgb&w=1600" }  // Terrain ajouté pour tester la page 2
+  { id: 1, title: "Terrain pied dans l’eau à Nosy Be", country: "Madagascar", city: "Nosy Be – Andilana", price: "2 500 €", size: "3 200 m²", category: "Résidentiel", tag: "Face à la mer", imageUrl: img1 },
+  { id: 2, title: "Terrain touristique pour écolodge", country: "Madagascar", city: "Nosy Be – Ambatoloaka", price: "5 000 €", size: "5 800 m²", category: "Touristique", tag: "Idéal projet hôtelier", imageUrl: img2 },
+  { id: 3, title: "Terrain pour complexe hôtelier vue 180°", country: "Madagascar", city: "Nosy Be – Mont Passot", price: "6 000 €", size: "1,8 ha", category: "Touristique", tag: "Vue panoramique", imageUrl: img3 },
+  { id: 4, title: "Terrain résidentiel proche plage", country: "Madagascar", city: "Nosy Be – Madirokely", price: "4 000 €", size: "1 050 m²", category: "Résidentiel", imageUrl: img4 },
+  { id: 5, title: "Terrain commercial à Nosy Be", country: "Madagascar", city: "Hell-Ville", price: "3 500 €", size: "2 100 m²", category: "Commercial", imageUrl: img5 },
+  { id: 6, title: "Terrain résidentiel à Madirokely", country: "Madagascar", city: "Nosy Be", price: "3 200 €", size: "1 500 m²", category: "Résidentiel", imageUrl: img6 },
+  { id: 7, title: "Opportunité Ambaro", country: "Madagascar", city: "Nosy Be – Ambaro", price: "7 500 €", size: "4 000 m²", category: "Touristique", imageUrl: img7 },
+  { id: 8, title: "Terrain exceptionnel Sakatia", country: "Madagascar", city: "Nosy Be – Sakatia", price: "8 200 €", size: "2 500 m²", category: "Résidentiel", imageUrl: img17 },
+  { id: 9, title: "Vue mer panoramique Orangea", country: "Madagascar", city: "Nosy Be – Orangea", price: "12 000 €", size: "5 000 m²", category: "Touristique", imageUrl: img19 },
+  { id: 10, title: "Grand domaine forestier", country: "Madagascar", city: "Nosy Be – Intérieur", price: "9 500 €", size: "2,5 ha", category: "Résidentiel", imageUrl: img20 }
 ];
 
 const ADMIN_CONTACT = { name: "Santoni Folio", phone: "+261 32 29 587 15", email: "globallandimmo@gmail.com", };
@@ -147,8 +157,7 @@ function Header({ t, currentLang, setLang, setSearchQuery }: {
              focus:bg-white focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/20 
              transition-all duration-300 outline-none text-sm shadow-sm"
           />
-          <Search className="w-4 h-4 text-gray-400 absolute left-4 top-3 
-            group-focus-within:text-emerald-600 transition-colors" />
+          <Search className="w-4 h-4 text-gray-400 absolute left-4 top-3 group-focus-within:text-emerald-600 transition-colors" />
         </div>
       </div>
 
@@ -167,28 +176,17 @@ function Header({ t, currentLang, setLang, setSearchQuery }: {
   );
 }
 
-function ListingsSection({ t, searchQuery, setSearchQuery }: { 
-  t: TranslationType, 
-  searchQuery: string, 
-  setSearchQuery: (s: string) => void 
-}) {
+function ListingsSection({ t, searchQuery, setSearchQuery }: { t: TranslationType, searchQuery: string, setSearchQuery: (s: string) => void }) {
   const [sort, setSort] = useState<"price-asc" | "price-desc">("price-asc");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Revenir à la première page quand on fait une recherche ou qu'on trie
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, sort]);
+  useEffect(() => { setCurrentPage(1); }, [searchQuery, sort]);
 
   const filteredAndSortedListings = useMemo(() => {
     let result = [...MOCK_LISTINGS];
     if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
-      result = result.filter(item => 
-        item.title.toLowerCase().includes(query) || 
-        item.city.toLowerCase().includes(query) ||
-        item.category.toLowerCase().includes(query)
-      );
+      result = result.filter(item => item.title.toLowerCase().includes(query) || item.city.toLowerCase().includes(query) || item.category.toLowerCase().includes(query));
     }
     return result.sort((a, b) => {
       const priceA = parseInt(a.price.replace(/\s|€/g, ""));
@@ -197,21 +195,15 @@ function ListingsSection({ t, searchQuery, setSearchQuery }: {
     });
   }, [sort, searchQuery]);
 
-  // Logique de pagination
   const totalPages = Math.ceil(filteredAndSortedListings.length / ITEMS_PER_PAGE);
-  const currentItems = filteredAndSortedListings.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE, 
-    currentPage * ITEMS_PER_PAGE
-  );
+  const currentItems = filteredAndSortedListings.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
     <section id="section-terrains" className="space-y-12">
       <div className="flex flex-col md:flex-row justify-between items-end gap-6">
         <div>
           <h2 className="text-3xl font-black text-slate-900 tracking-tight">{t.listingsTitle}</h2>
-          <p className="text-slate-500 mt-2">
-            {searchQuery ? `Résultats pour "${searchQuery}"` : t.listingsSub}
-          </p>
+          <p className="text-slate-500 mt-2">{searchQuery ? `Résultats pour "${searchQuery}"` : t.listingsSub}</p>
         </div>
         <div className="flex p-1 bg-slate-100 rounded-xl">
           <button onClick={() => setSort("price-asc")} className={`px-4 py-2 text-[10px] font-bold rounded-lg transition-all ${sort === "price-asc" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>{t.sortAsc.toUpperCase()}</button>
@@ -221,19 +213,18 @@ function ListingsSection({ t, searchQuery, setSearchQuery }: {
 
       {filteredAndSortedListings.length > 0 ? (
         <>
-          {/* L'interface reste identique pour la grille ! */}
-          <div className="grid gap-8 md:grid-cols-2">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {currentItems.map((listing) => (
               <article key={listing.id} className="group relative bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500">
-                <div className="aspect-video overflow-hidden">
+                <div className="aspect-[4/3] overflow-hidden">
                   <img src={listing.imageUrl} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
                 <div className="p-6 space-y-4">
                   <div className="flex justify-between items-start">
                     <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase">{listing.category}</span>
-                    <p className="text-xl font-black text-slate-900">{listing.price}</p>
+                    <p className="text-lg font-black text-slate-900">{listing.price}</p>
                   </div>
-                  <h3 className="text-lg font-bold leading-tight">{listing.title}</h3>
+                  <h3 className="text-md font-bold leading-tight h-10 line-clamp-2">{listing.title}</h3>
                   <div className="flex items-center gap-2 text-slate-400 text-xs">
                     <MapPin size={14} /> {listing.city}
                   </div>
@@ -243,40 +234,23 @@ function ListingsSection({ t, searchQuery, setSearchQuery }: {
             ))}
           </div>
 
-          {/* Boutons de Pagination ajoutés ici */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-6 mt-12 pt-6 border-t border-slate-100">
-              <button 
-                disabled={currentPage === 1}
-                onClick={() => { setCurrentPage(prev => prev - 1); scrollToSection('section-terrains'); }}
-                className="px-6 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 disabled:opacity-30 disabled:hover:bg-transparent hover:bg-slate-50 transition-all"
-              >
-                ← {t.prev}
-              </button>
-              <span className="text-xs font-black text-slate-400 uppercase tracking-widest">
-                {t.page} {currentPage} / {totalPages}
-              </span>
-              <button 
-                disabled={currentPage === totalPages}
-                onClick={() => { setCurrentPage(prev => prev + 1); scrollToSection('section-terrains'); }}
-                className="px-6 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 disabled:opacity-30 disabled:hover:bg-transparent hover:bg-slate-50 transition-all"
-              >
-                {t.next} →
-              </button>
+              <button disabled={currentPage === 1} onClick={() => { setCurrentPage(prev => prev - 1); scrollToSection('section-terrains'); }} className="px-6 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 disabled:opacity-30 hover:bg-slate-50 transition-all">← {t.prev}</button>
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{t.page} {currentPage} / {totalPages}</span>
+              <button disabled={currentPage === totalPages} onClick={() => { setCurrentPage(prev => prev + 1); scrollToSection('section-terrains'); }} className="px-6 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 disabled:opacity-30 hover:bg-slate-50 transition-all">{t.next} →</button>
             </div>
           )}
         </>
       ) : (
         <div className="text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-          <p className="text-slate-500 font-medium">{t.noResult || "Aucun résultat trouvé."}</p>
+          <p className="text-slate-500 font-medium">{t.noResult}</p>
           <button onClick={() => setSearchQuery("")} className="mt-4 text-emerald-600 text-sm font-bold">Effacer la recherche</button>
         </div>
       )}
     </section>
   );
 }
-
-// --- AUTRES COMPOSANTS ---
 
 function HeroSection({ t }: { t: TranslationType }) {
   return (
@@ -298,7 +272,7 @@ function StatsSection({ t }: { t: TranslationType }) {
   return (
     <section className="grid gap-6 sm:grid-cols-3">
       {stats.map((stat) => (
-        <div key={stat.label} className="p-8 rounded-3xl bg-slate-50 border border-slate-100 text-center transition-hover hover:bg-white hover:shadow-xl group">
+        <div key={stat.label} className="p-8 rounded-3xl bg-slate-50 border border-slate-100 text-center hover:bg-white hover:shadow-xl group transition-all">
           <p className="text-3xl font-black text-slate-900 group-hover:text-emerald-500 transition-colors">{stat.value}</p>
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">{stat.label}</p>
         </div>
@@ -321,7 +295,7 @@ function HowItWorksSection({ t }: { t: TranslationType }) {
       </div>
       <div className="relative">
         <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl rotate-2">
-          <img src="https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Nosy Be" className="w-full h-full object-cover" />
+          <img src={img20} alt="Méthode Nosy Be" className="w-full h-full object-cover" />
         </div>
       </div>
     </section>
@@ -372,18 +346,17 @@ function ContactSection({ t }: { t: TranslationType }) {
               <input name="phone" type="tel" placeholder={t.formTel} required className="w-full rounded-xl bg-white/5 border border-white/10 p-3 pl-10 text-sm outline-none focus:border-emerald-400/50 focus:bg-white/10 transition-all" />
             </div>
             <textarea name="message" placeholder={t.formMsg} rows={3} required className="w-full rounded-xl bg-white/5 border border-white/10 p-3 text-sm outline-none focus:border-emerald-400/50 focus:bg-white/10 transition-all resize-none" />
-            <button disabled={status === "SENDING"} className="w-full rounded-xl bg-emerald-500 py-4 font-bold text-slate-900 hover:bg-emerald-400 transition-all disabled:opacity-50 active:scale-[0.98]">
+            <button disabled={status === "SENDING"} className="w-full rounded-xl bg-emerald-500 py-4 font-bold text-slate-900 hover:bg-emerald-400 transition-all active:scale-[0.98]">
               {status === "SENDING" ? "ENVOI EN COURS..." : t.formBtn}
             </button>
-            {status === "SUCCESS" && <p className="text-center text-emerald-400 text-xs font-bold mt-2 animate-pulse">✅ Envoyé !</p>}
+            {status === "SUCCESS" && <p className="text-center text-emerald-400 text-xs font-bold mt-2">✅ Message envoyé !</p>}
           </form>
         </div>
 
         <div className="flex flex-col justify-between space-y-8 rounded-2xl bg-white/5 p-8 border border-white/10 backdrop-blur-sm">
           <div>
             <div className="flex items-center gap-2 text-emerald-400 mb-2">
-              <CheckCircle2 size={14} />
-              <p className="text-[10px] font-bold uppercase tracking-widest">Conseiller disponible</p>
+              <CheckCircle2 size={14} /><p className="text-[10px] font-bold uppercase tracking-widest">Conseiller disponible</p>
             </div>
             <h3 className="text-2xl font-bold">{ADMIN_CONTACT.name}</h3>
             <p className="text-sm text-slate-400 mt-1">Global Land IMMO — Expertise Nosy Be</p>
@@ -399,9 +372,9 @@ function ContactSection({ t }: { t: TranslationType }) {
             </a>
           </div>
           <div className="flex items-center gap-6">
-            <a href="https://www.facebook.com/global.land.immo" target="_blank"><img src={facebook} alt="Facebook" className="h-9 w-auto" /></a>
-            <a href="https://www.instagram.com/global.land.immo/" target="_blank"><img src={instagram} alt="Instagram" className="h-9 w-auto" /></a>
-            <a href="https://www.linkedin.com/company/global-land-immo-madagascar/" target="_blank"><img src={linkedin} alt="LinkedIn" className="h-9 w-auto" /></a>
+            <a href="https://www.facebook.com/" target="_blank" rel="noreferrer"><img src={facebook} alt="Facebook" className="h-9 w-auto" /></a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noreferrer"><img src={instagram} alt="Instagram" className="h-9 w-auto" /></a>
+            <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer"><img src={linkedin} alt="LinkedIn" className="h-9 w-auto" /></a>
           </div>
         </div>
       </div>
