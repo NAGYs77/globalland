@@ -1,13 +1,16 @@
+
+
 import type { ReactNode } from "react";
-import { useMemo, useState, useEffect} from "react";
+import { useMemo, useState, useEffect } from "react";
+import { Search, User, Mail, Phone, MapPin, CheckCircle2 } from 'lucide-react';
+
+// Assets
 import ter from './assets/ter.jpg';
-import facebook from'./assets/facebook.png';
-import instagram from'./assets/instagram.png';
+import facebook from './assets/facebook.png';
+import instagram from './assets/instagram.png';
 import linkedin from './assets/linkedin.png';
 
-
-
-//  TRADUCTIONS 
+// --- TRADUCTIONS ---
 const translations = {
   fr: {
     navTerrains: "Terrains", navMethode: "Méthode", navContact: "Contact",
@@ -19,11 +22,12 @@ const translations = {
     contactTitle: "Parlons de votre projet.", contactDesc: "Échangez avec un expert basé à Nosy Be pour obtenir des pistes concrètes en 24h.",
     formName: "Nom complet", formEmail: "Email", formTel: "Téléphone / WhatsApp", formMsg: "Votre projet...", formBtn: "Envoyer ma demande",
     howItWorksTitle: "Une expérience pensée pour Nosy Be.", howItWorksDesc: "Tout est centralisé avec une équipe locale qui connaît parfaitement les spécificités de Madagascar.",
-    step1Title: "Stratégie foncière", step1Desc: "Budget, localisation et usage (villa, hôtel, resort).",
+    step1Title: "Strategie foncière", step1Desc: "Budget, localisation et usage (villa, hôtel, resort).",
     step2Title: "Sélection ciblée", step2Desc: "Pré-qualification juridique et analyse du potentiel.",
     step3Title: "Acquisition", step3Desc: "Accompagnement notarial et sécurisation de l'acte.",
     cookieTitle: "Un petit cookie pour la route ?", cookieDesc: "Ce site enregistre des cookies pour vous offrir la meilleure expérience de navigation possible.",
     cookieChoice: "Je choisis", cookieDecline: "Non merci", cookieAccept: "OK pour moi",
+    noResult: "Aucun terrain ne correspond à votre recherche."
   },
   en: {
     navTerrains: "Plots", navMethode: "Method", navContact: "Contact",
@@ -40,10 +44,11 @@ const translations = {
     step3Title: "Acquisition", step3Desc: "Notary support and securing the deed.",
     cookieTitle: "A little cookie for the road?", cookieDesc: "This site records cookies to offer you the best possible navigation experience.",
     cookieChoice: "I choose", cookieDecline: "No thanks", cookieAccept: "OK for me",
+    noResult: "No results found for your search."
   },
   it: {
     navTerrains: "Terreni", navMethode: "Metodo", navContact: "Contatto",
-    heroTitle: "Trova il terreno ideale,", heroSub: "senza perdere tempo.",
+    heroTitle: "Trova il terreno ideale,", heroSub: "senza perdre tempo.",
     heroDesc: "Supporto chiavi in mano pour l'acquisto di terreni sicuri a Nosy Be. Per investitori, albergatori e privati.",
     heroBtn: "Vedi le opportunità", stats1: "Terreni a Nosy Be", stats2: "Volume gestito", stats3: "Soddisfazione",
     listingsTitle: "Opportunità in primo piano", listingsSub: "Terreni verificati e pronti per la firma",
@@ -54,41 +59,45 @@ const translations = {
     step1Title: "Strategia fondiaria", step1Desc: "Budget, posizione e utilizzo (villa, hotel, resort).",
     step2Title: "Selezione mirata", step2Desc: "Pre-qualificazione legale e analisi del potenziale.",
     step3Title: "Acquisizione", step3Desc: "Supporto notarile e messa in sicurezza dell'atto.",
-    cookieTitle: "Un piccolo cookie per la strada?", cookieDesc: "Questo sito registra i cookie per offrirti la migliore esperienza di navigazione possible.",
+    cookieTitle: "Un piccolo cookie per la strada?", cookieDesc: "Questo sito registra i cookie per offrirti la meilleure esperienza di navigazione possible.",
     cookieChoice: "Scelgo", cookieDecline: "No grazie", cookieAccept: "OK per me",
+    noResult: "Nessun risultato trovato."
   }
 };
 
 type Language = "fr" | "en" | "it";
 type TranslationType = typeof translations.fr;
 type LandCategory = "Résidentiel" | "Commercial" | "Touristique";
-type Country = "Madagascar";
-type LandListing = { id: number; title: string; country: Country; city: string; price: string; size: string; category: LandCategory; tag?: string; imageUrl: string; };
+type LandListing = { id: number; title: string; country: string; city: string; price: string; size: string; category: LandCategory; tag?: string; imageUrl: string; };
 
 const MOCK_LISTINGS: LandListing[] = [
   { id: 1, title: "Terrain pied dans l’eau à Nosy Be", country: "Madagascar", city: "Nosy Be – Andilana", price: "2500 €", size: "3 200 m²", category: "Résidentiel", tag: "Face à la mer", imageUrl: "https://images.pexels.com/photos/462162/pexels-photo-462162.jpeg?auto=compress&cs=tinysrgb&w=1200" },
   { id: 2, title: "Terrain touristique pour écolodge", country: "Madagascar", city: "Nosy Be – Ambatoloaka", price: "5 000 €", size: "5 800 m²", category: "Touristique", tag: "Idéal projet hôtelier", imageUrl: "https://images.pexels.com/photos/325944/pexels-photo-325944.jpeg?auto=compress&cs=tinysrgb&w=1200" },
   { id: 3, title: "Terrain pour complexe hôtelier vue 180°", country: "Madagascar", city: "Nosy Be – Mont Passot", price: "6 000 €", size: "1,8 ha", category: "Touristique", tag: "Vue panoramique", imageUrl: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1200" },
   { id: 4, title: "Terrain résidentiel proche plage", country: "Madagascar", city: "Nosy Be – Madirokely", price: "4 000 €", size: "1 050 m²", category: "Résidentiel", imageUrl: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=1200" },
-  { id: 5, title: "Terrain résidentiel proche plage", country: "Madagascar", city: "Nosy Be – Madirokely", price: "5 500 €", size: "1 050 m²", category: "Résidentiel", imageUrl: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=1200" },
-  { id: 6, title: "Terrain résidentiel proche plage", country: "Madagascar", city: "Nosy Be – Madirokely", price: "6 500 €", size: "1 050 m²", category: "Résidentiel", imageUrl: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=1200" },
 ];
 
 const ADMIN_CONTACT = { name: "Santoni Folio", phone: "+261 32 29 587 15", email: "globallandimmo@gmail.com", };
 
+const scrollToSection = (id: string) => { 
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); 
+};
+
 export default function App() {
   const [lang, setLang] = useState<Language>("fr");
+  const [searchQuery, setSearchQuery] = useState(""); 
   const t: TranslationType = translations[lang];
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 ">
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900">
       <GradientBackground />
-      <Header t={t} currentLang={lang} setLang={setLang} />
+      <Header t={t} currentLang={lang} setLang={setLang} setSearchQuery={setSearchQuery} />
       <Layout>
-        <main className="relative z-10 space-y-16 pb-20 pt-10 lg:pt-14">
+        <main className="relative z-10 space-y-20 pb-20 pt-10">
           <HeroSection t={t} />
           <StatsSection t={t} />
-          <ListingsSection t={t} />
+          {/* IMPORTANT : On passe searchQuery ET setSearchQuery ici */}
+          <ListingsSection t={t} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           <HowItWorksSection t={t} />
           <ContactSection t={t} />
         </main>
@@ -99,172 +108,190 @@ export default function App() {
   );
 }
 
-function CookieBanner({ t }: { t: TranslationType }) {
-  const [isVisible, setIsVisible] = useState(false);
-  useEffect(() => { const consent = localStorage.getItem("cookie-consent"); if (!consent) setIsVisible(true); }, []);
-  const handleConsent = () => { localStorage.setItem("cookie-consent", "accepted"); setIsVisible(false); };
-  const handleDecline = () => { localStorage.setItem("cookie-consent", "declined"); setIsVisible(false); };
-  if (!isVisible) return null;
+function Header({ t, currentLang, setLang, setSearchQuery }: { 
+  t: TranslationType, 
+  currentLang: Language, 
+  setLang: (l: Language) => void,
+  setSearchQuery: (s: string) => void 
+}) {
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-slate-900/40 p-4 backdrop-blur-sm sm:items-center">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200">
-        <div className="absolute -right-10 -top-10 h-32 w-32 rotate-12 bg-amber-100/50 rounded-full blur-2xl" />
-        <div className="p-6 sm:p-8">
-          <div className="flex items-center gap-3 mb-4"><span className="text-2xl">🍪</span><h2 className="text-xl font-bold text-slate-900">{t.cookieTitle}</h2></div>
-          <div className="space-y-4 text-sm leading-relaxed text-slate-600">
-            <p>{t.cookieDesc}</p>
-            <p>Laissez-vous nos cookies vous accompagner... <br /><span className="text-[10px] text-slate-400 italic">Vous pouvez modifier vos choix à tout moment.</span></p>
-          </div>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <button onClick={handleDecline} className="text-sm font-bold text-slate-400 hover:text-slate-600 transition">{t.cookieChoice}</button>
-            <div className="flex gap-2">
-              <button onClick={handleDecline} className="flex-1 rounded-xl bg-slate-100 px-6 py-3 text-sm font-bold text-slate-600 hover:bg-slate-200 transition sm:flex-none">{t.cookieDecline}</button>
-              <button onClick={handleConsent} className="flex-1 rounded-xl bg-amber-400 px-6 py-3 text-sm font-bold text-slate-900 shadow-lg shadow-amber-200 hover:bg-amber-500 transition sm:flex-none">{t.cookieAccept}</button>
-            </div>
-          </div>
+    <header className="sticky top-0 z-50 flex items-center border-b border-slate-200/60 bg-white/80 py-4 backdrop-blur-md px-4 sm:px-8">
+      <div className="flex items-center gap-3 shrink-0">
+        <img src={ter} alt="Logo" className="h-14 w-auto object-contain" />
+        <div className="hidden sm:block">
+          <p className="text-sm font-black text-slate-900 leading-none tracking-tight">NosyBe Lands</p>
+          <p className="text-[9px] text-emerald-600 font-bold uppercase mt-1">Expertise Immobilière</p>
         </div>
       </div>
-    </div>
-  );
-}
 
-function Layout({ children }: { children: ReactNode }) { return <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 sm:px-6 lg:px-8">{children}</div>; }
-function GradientBackground() {
-  return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden ">
-      <div className="absolute -left-32 top-[-10%] h-72 w-72 rounded-full bg-emerald-200/40 blur-3xl" />
-      <div className="absolute right-[-10%] top-1/4 h-80 w-80 rounded-full bg-sky-200/40 blur-3xl" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0)_0,_rgba(255,255,255,0.9)_55%,_rgba(248,250,252,1)_100%)]" />
-    </div>
-  );
-}
-
-function Header({ t, currentLang, setLang }: { t: TranslationType, currentLang: Language, setLang: (l: Language) => void }) {
-  return (
-    <header className="relative z-20 flex items-center justify-between border-b border-slate-200/80 bg-white/60 py-4 backdrop-blur sm:py-5">
-      <div className="flex items-center gap-3">
-        <img src={ter} alt="Logo" className="h-20 w-auto object-contain mix-blend-multiply dark:mix-blend-normal group-hover:scale-105 transition-transform duration-300" />
-        <div><p className="text-sm font-semibold text-slate-900">NosyBe Lands</p><p className="text-xs text-slate-400">Madagascar</p></div>
+      <div className="hidden lg:flex flex-1 justify-center px-4">
+        <div className="relative w-full max-w-md group">
+          <input
+            type="text"
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              if(e.target.value.length > 0) scrollToSection('section-terrains');
+            }}
+            placeholder="Rechercher un terrain, une ville..."
+            className="bg-gray-100 px-10 border-2 border-transparent rounded-full py-2.5 w-full 
+             focus:bg-white focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/20 
+             transition-all duration-300 outline-none text-sm shadow-sm"
+          />
+          <Search className="w-4 h-4 text-gray-400 absolute left-4 top-3 
+            group-focus-within:text-emerald-600 transition-colors" />
+        </div>
       </div>
-      <nav className="hidden gap-8 text-sm text-slate-600 md:flex font-medium">
-        <button onClick={() => scrollToSection('section-terrains')} className="hover:text-emerald-500 transition">{t.navTerrains}</button>
-        <button onClick={() => scrollToSection('section-methode')} className="hover:text-emerald-500 transition">{t.navMethode}</button>
-        <button onClick={() => scrollToSection('section-contact')} className="hover:text-emerald-500 transition">{t.navContact}</button>
+
+      <nav className="hidden md:flex ml-auto mr-8 gap-8 text-sm font-semibold text-slate-600">
+        <button onClick={() => scrollToSection('section-terrains')} className="hover:text-emerald-600 transition">{t.navTerrains}</button>
+        <button onClick={() => scrollToSection('section-methode')} className="hover:text-emerald-600 transition">{t.navMethode}</button>
+        <button onClick={() => scrollToSection('section-contact')} className="hover:text-emerald-600 transition">{t.navContact}</button>
       </nav>
-      <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1 shadow-sm">
+
+      <div className="flex gap-1 bg-slate-100 p-1 rounded-full shrink-0">
         {(['fr', 'en', 'it'] as const).map((l) => (
-          <button key={l} onClick={() => setLang(l)} className={`px-3 py-1 text-[10px] font-bold rounded-full transition ${currentLang === l ? 'bg-emerald-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>{l.toUpperCase()}</button>
+          <button key={l} onClick={() => setLang(l)} className={`px-3 py-1 text-[10px] font-black rounded-full transition-all ${currentLang === l ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-400 hover:text-slate-900'}`}>{l.toUpperCase()}</button>
         ))}
       </div>
     </header>
   );
 }
 
-function scrollToSection(id: string) { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); }
+function ListingsSection({ t, searchQuery, setSearchQuery }: { 
+  t: TranslationType, 
+  searchQuery: string, 
+  setSearchQuery: (s: string) => void 
+}) {
+  const [sort, setSort] = useState<"price-asc" | "price-desc">("price-asc");
+
+  const filteredAndSortedListings = useMemo(() => {
+    let result = [...MOCK_LISTINGS];
+    if (searchQuery.trim() !== "") {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(item => 
+        item.title.toLowerCase().includes(query) || 
+        item.city.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query)
+      );
+    }
+    return result.sort((a, b) => {
+      const priceA = parseInt(a.price.replace(/\s|€/g, ""));
+      const priceB = parseInt(b.price.replace(/\s|€/g, ""));
+      return sort === "price-asc" ? priceA - priceB : priceB - priceA;
+    });
+  }, [sort, searchQuery]);
+
+  return (
+    <section id="section-terrains" className="space-y-12">
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6">
+        <div>
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">{t.listingsTitle}</h2>
+          <p className="text-slate-500 mt-2">
+            {searchQuery ? `Résultats pour "${searchQuery}"` : t.listingsSub}
+          </p>
+        </div>
+        <div className="flex p-1 bg-slate-100 rounded-xl">
+          <button onClick={() => setSort("price-asc")} className={`px-4 py-2 text-[10px] font-bold rounded-lg transition-all ${sort === "price-asc" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>{t.sortAsc.toUpperCase()}</button>
+          <button onClick={() => setSort("price-desc")} className={`px-4 py-2 text-[10px] font-bold rounded-lg transition-all ${sort === "price-desc" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>{t.sortDesc.toUpperCase()}</button>
+        </div>
+      </div>
+
+      {filteredAndSortedListings.length > 0 ? (
+        <div className="grid gap-8 md:grid-cols-2">
+          {filteredAndSortedListings.map((listing) => (
+            <article key={listing.id} className="group relative bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500">
+              <div className="aspect-video overflow-hidden">
+                <img src={listing.imageUrl} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="flex justify-between items-start">
+                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase">{listing.category}</span>
+                  <p className="text-xl font-black text-slate-900">{listing.price}</p>
+                </div>
+                <h3 className="text-lg font-bold leading-tight">{listing.title}</h3>
+                <div className="flex items-center gap-2 text-slate-400 text-xs">
+                  <MapPin size={14} /> {listing.city}
+                </div>
+                <button onClick={() => scrollToSection('section-contact')} className="w-full py-3 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-emerald-500 transition-colors uppercase tracking-widest">{t.cardBtn}</button>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+          <p className="text-slate-500 font-medium">{(t as any).noResult || "Aucun résultat trouvé."}</p>
+          <button onClick={() => setSearchQuery("")} className="mt-4 text-emerald-600 text-sm font-bold">Effacer la recherche</button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+// --- AUTRES COMPOSANTS ---
 
 function HeroSection({ t }: { t: TranslationType }) {
   return (
-    <section className="text-center space-y-7 py-6">
-      <h1 className="mx-auto max-w-4xl text-balance text-4xl font-extrabold tracking-tight text-slate-900 sm:text-6xl">
-        {t.heroTitle} <br/><span className="bg-gradient-to-r from-emerald-500 to-sky-500 bg-clip-text text-transparent">{t.heroSub}</span>
-      </h1>
-      <p className="mx-auto max-w-2xl text-slate-600 sm:text-lg">{t.heroDesc}</p>
-      <div className="flex justify-center gap-4 pt-4">
-        <button onClick={() => scrollToSection('section-terrains')} className="rounded-full bg-emerald-500 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-600 transition">{t.heroBtn}</button>
+    <section className="text-center space-y-8 py-10">
+      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold uppercase tracking-widest">
+        <MapPin size={12} /> Nosy Be, Madagascar
       </div>
+      <h1 className="mx-auto max-w-4xl text-5xl font-black tracking-tighter text-slate-900 sm:text-7xl">
+        {t.heroTitle} <br/><span className="text-emerald-500">{t.heroSub}</span>
+      </h1>
+      <p className="mx-auto max-w-2xl text-slate-500 text-lg leading-relaxed">{t.heroDesc}</p>
+      <button onClick={() => scrollToSection('section-terrains')} className="rounded-2xl bg-slate-900 px-10 py-4 text-sm font-bold text-white shadow-2xl hover:bg-emerald-600 transition-all hover:scale-105 active:scale-95">{t.heroBtn}</button>
     </section>
   );
 }
 
 function StatsSection({ t }: { t: TranslationType }) {
-  const stats = [ { label: t.stats1, value: "120+", helper: "Nosy Be" }, { label: t.stats2, value: "3 Mds Ar", helper: "Transactions" }, { label: t.stats3, value: "4.9/5", helper: "Reviews" }, ];
+  const stats = [ { label: t.stats1, value: "120+" }, { label: t.stats2, value: "3 Mds Ar" }, { label: t.stats3, value: "4.9/5" } ];
   return (
-    <section className="grid gap-4 sm:grid-cols-3">
+    <section className="grid gap-6 sm:grid-cols-3">
       {stats.map((stat) => (
-        <article key={stat.label} className="rounded-2xl border border-slate-200 bg-white/50 p-6 text-center shadow-sm backdrop-blur-sm">
-          <p className="text-2xl font-bold text-emerald-600">{stat.value}</p>
-          <p className="mt-1 text-sm font-semibold text-slate-900">{stat.label}</p>
-        </article>
+        <div key={stat.label} className="p-8 rounded-3xl bg-slate-50 border border-slate-100 text-center transition-hover hover:bg-white hover:shadow-xl group">
+          <p className="text-3xl font-black text-slate-900 group-hover:text-emerald-500 transition-colors">{stat.value}</p>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">{stat.label}</p>
+        </div>
       ))}
     </section>
   );
 }
 
-function ListingsSection({ t }: { t: TranslationType }) {
-  const [sort, setSort] = useState<"price-asc" | "price-desc">("price-asc");
-  const sortedListings = useMemo(() => {
-    return [...MOCK_LISTINGS].sort((a, b) => {
-      const priceA = parseInt(a.price.replace(/\s|€/g, ""));
-      const priceB = parseInt(b.price.replace(/\s|€/g, ""));
-      return sort === "price-asc" ? priceA - priceB : priceB - priceA;
-    });
-  }, [sort]);
-  return (
-    <section id="section-terrains" className="space-y-10 rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-xl backdrop-blur-md">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-100 pb-6">
-        <div><h2 className="text-xl font-bold text-slate-900">{t.listingsTitle}</h2><p className="text-sm text-slate-500 text-center md:text-left">{t.listingsSub}</p></div>
-        <div className="flex gap-2">
-          <button onClick={() => setSort("price-asc")} className={`px-4 py-2 text-xs rounded-full font-bold transition ${sort === "price-asc" ? 'bg-emerald-500 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>{t.sortAsc}</button>
-          <button onClick={() => setSort("price-desc")} className={`px-4 py-2 text-xs rounded-full font-bold transition ${sort === "price-desc" ? 'bg-emerald-500 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>{t.sortDesc}</button>
-        </div>
-      </div>
-      <div className="flex justify-center"><div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2 w-full max-w-4xl">{sortedListings.map((listing) => (<PropertyCard key={listing.id} listing={listing} btnText={t.cardBtn} />))}</div></div>
-    </section>
-  );
-}
-
-function PropertyCard({ listing, btnText }: { listing: LandListing, btnText: string }) {
-  return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-100 hover:-translate-y-1.5">
-      <div className="relative h-56 w-full overflow-hidden">
-        <img src={listing.imageUrl} alt={listing.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
-        <div className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[10px] font-bold text-slate-900 uppercase tracking-widest shadow-sm">{listing.city}</div>
-      </div>
-      <div className="flex flex-col p-5 space-y-4">
-        <div className="flex justify-between items-center"><span className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter bg-emerald-50 px-2 py-0.5 rounded">{listing.category}</span><span className="text-base font-black text-slate-900">{listing.price}</span></div>
-        <h3 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-emerald-600 transition-colors">{listing.title}</h3>
-        <button onClick={() => scrollToSection('section-contact')} className="w-full rounded-xl bg-slate-900 py-3 text-xs font-bold text-white transition-all hover:bg-emerald-600 active:scale-95 shadow-lg shadow-slate-200">{btnText}</button>
-      </div>
-    </article>
-  );
-}
-
 function HowItWorksSection({ t }: { t: TranslationType }) {
   return (
-    <section id="section-methode" className="grid gap-8 rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-xl lg:grid-cols-2">
-      <div className="space-y-5">
-        <h2 className="text-2xl font-bold text-slate-900">{t.howItWorksTitle}</h2>
-        <p className="text-slate-600">{t.howItWorksDesc}</p>
-        <ol className="space-y-3"><StepItem step="1" title={t.step1Title} description={t.step1Desc} /><StepItem step="2" title={t.step2Title} description={t.step2Desc} /><StepItem step="3" title={t.step3Title} description={t.step3Desc} /></ol>
+    <section id="section-methode" className="rounded-[40px] bg-slate-50 border border-slate-100 p-10 lg:p-16 grid lg:grid-cols-2 gap-16 items-center">
+      <div className="space-y-8">
+        <h2 className="text-4xl font-black tracking-tight leading-none">{t.howItWorksTitle}</h2>
+        <p className="text-slate-500 text-lg leading-relaxed">{t.howItWorksDesc}</p>
+        <div className="space-y-6">
+          <StepItem num="01" title={t.step1Title} desc={t.step1Desc} />
+          <StepItem num="02" title={t.step2Title} desc={t.step2Desc} />
+          <StepItem num="03" title={t.step3Title} desc={t.step3Desc} />
+        </div>
       </div>
-      <div className="space-y-4 rounded-2xl bg-slate-50 p-5">
-        <div className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm">
-          <p className="italic text-slate-700 text-sm">“Sécuriser un terrain en première ligne mer à Nosy Be en moins de 4 mois a été possible grâce à leur expertise locale.”</p>
-          <p className="mt-4 text-xs font-bold">S. Martin — <span className="text-slate-500 font-normal">Investisseur</span></p>
+      <div className="relative">
+        <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl rotate-2">
+          <img src="https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Nosy Be" className="w-full h-full object-cover" />
         </div>
       </div>
     </section>
   );
 }
 
-// --- TON COMPOSANT CONTACT CORRIGÉ AVEC FORMSPREE ---
 function ContactSection({ t }: { t: TranslationType }) {
   const [status, setStatus] = useState<"IDLE" | "SENDING" | "SUCCESS" | "ERROR">("IDLE");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus("SENDING");
-
     const form = e.currentTarget;
     const formData = new FormData(form);
-
-    // REMPLACE "TON_ID_FORMSPREE" PAR TON CODE FORMSPREE
-    const response = await fetch("https://formspree.io/f/xykdlgvp ", {
+    const response = await fetch("https://formspree.io/f/xykdlgvp", {
       method: "POST",
       body: formData,
       headers: { 'Accept': 'application/json' }
     });
-
     if (response.ok) {
       setStatus("SUCCESS");
       form.reset();
@@ -276,44 +303,102 @@ function ContactSection({ t }: { t: TranslationType }) {
 
   return (
     <section id="section-contact" className="rounded-3xl border border-slate-200 bg-slate-900 p-8 text-white shadow-2xl">
-      <div className="grid gap-10 lg:grid-cols-2">
+      <div className="grid gap-12 lg:grid-cols-2">
         <div className="space-y-6">
-          <h2 className="text-3xl font-bold">{t.contactTitle}</h2>
+          <h2 className="text-3xl font-bold tracking-tight">{t.contactTitle}</h2>
           <p className="text-slate-400">{t.contactDesc}</p>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
-              <input name="name" type="text" placeholder={t.formName} required className="rounded-xl bg-white/10 border border-white/20 p-3 text-sm outline-none focus:border-emerald-400" />
-              <input name="email" type="email" placeholder={t.formEmail} required className="rounded-xl bg-white/10 border border-white/20 p-3 text-sm outline-none focus:border-emerald-400" />
+              <div className="relative group">
+                <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                <input name="name" type="text" placeholder={t.formName} required className="w-full rounded-xl bg-white/5 border border-white/10 p-3 pl-10 text-sm outline-none focus:border-emerald-400/50 focus:bg-white/10 transition-all" />
+              </div>
+              <div className="relative group">
+                <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                <input name="email" type="email" placeholder={t.formEmail} required className="w-full rounded-xl bg-white/5 border border-white/10 p-3 pl-10 text-sm outline-none focus:border-emerald-400/50 focus:bg-white/10 transition-all" />
+              </div>
             </div>
-            <input name="phone" type="tel" placeholder={t.formTel} required className="w-full rounded-xl bg-white/10 border border-white/20 p-3 text-sm outline-none focus:border-emerald-400" />
-            <textarea name="message" placeholder={t.formMsg} rows={3} required className="w-full rounded-xl bg-white/10 border border-white/20 p-3 text-sm outline-none focus:border-emerald-400" />
-            <button disabled={status === "SENDING"} className="w-full rounded-xl bg-emerald-500 py-3 font-bold hover:bg-emerald-400 transition-all disabled:opacity-50">
-              {status === "SENDING" ? "ENVOI..." : t.formBtn}
+            <div className="relative group">
+              <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+              <input name="phone" type="tel" placeholder={t.formTel} required className="w-full rounded-xl bg-white/5 border border-white/10 p-3 pl-10 text-sm outline-none focus:border-emerald-400/50 focus:bg-white/10 transition-all" />
+            </div>
+            <textarea name="message" placeholder={t.formMsg} rows={3} required className="w-full rounded-xl bg-white/5 border border-white/10 p-3 text-sm outline-none focus:border-emerald-400/50 focus:bg-white/10 transition-all resize-none" />
+            <button disabled={status === "SENDING"} className="w-full rounded-xl bg-emerald-500 py-4 font-bold text-slate-900 hover:bg-emerald-400 transition-all disabled:opacity-50 active:scale-[0.98]">
+              {status === "SENDING" ? "ENVOI EN COURS..." : t.formBtn}
             </button>
-            {status === "SUCCESS" && <p className="text-center text-emerald-400 text-xs font-bold mt-2">✅ Message envoyé avec succès !</p>}
-            {status === "ERROR" && <p className="text-center text-red-400 text-xs font-bold mt-2">❌ Erreur technique. Réessayez.</p>}
+            {status === "SUCCESS" && <p className="text-center text-emerald-400 text-xs font-bold mt-2 animate-pulse">✅ Envoyé !</p>}
           </form>
         </div>
-        <div className="flex flex-col justify-center space-y-6 rounded-2xl bg-white/5 p-6 border border-white/10">
-           <div><p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Contact</p><h3 className="text-xl font-bold mt-1">{ADMIN_CONTACT.name}</h3><p className="text-sm text-slate-400">Expert foncier Madagascar</p></div>
-           <p className="text-sm">📱 {ADMIN_CONTACT.phone}<br/>📧 {ADMIN_CONTACT.email}</p>
 
-            <img src={facebook} alt="Logo" className="h-15 w-auto object-contain  group-hover:scale-105 transition-transform duration-300" />
-             <img src={instagram} alt="Logo" className="h-15 w-auto object-contain  group-hover:scale-105 transition-transform duration-300" />
-              <img src={linkedin} alt="Logo" className="h-15 w-auto object-contain  group-hover:scale-105 transition-transform duration-300"/>
+        <div className="flex flex-col justify-between space-y-8 rounded-2xl bg-white/5 p-8 border border-white/10 backdrop-blur-sm">
+          <div>
+            <div className="flex items-center gap-2 text-emerald-400 mb-2">
+              <CheckCircle2 size={14} />
+              <p className="text-[10px] font-bold uppercase tracking-widest">Conseiller disponible</p>
+            </div>
+            <h3 className="text-2xl font-bold">{ADMIN_CONTACT.name}</h3>
+            <p className="text-sm text-slate-400 mt-1">Global Land IMMO — Expertise Nosy Be</p>
+          </div>
+          <div className="space-y-4">
+            <a href={`tel:${ADMIN_CONTACT.phone}`} className="flex items-center gap-4 group">
+              <div className="p-3 rounded-full bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-slate-900 transition-all"><Phone size={20} /></div>
+              <div><p className="text-[10px] text-slate-500 uppercase font-bold">WhatsApp / Tel</p><p className="text-sm font-medium">{ADMIN_CONTACT.phone}</p></div>
+            </a>
+            <a href={`mailto:${ADMIN_CONTACT.email}`} className="flex items-center gap-4 group">
+              <div className="p-3 rounded-full bg-sky-500/10 text-sky-400 group-hover:bg-sky-500 group-hover:text-slate-900 transition-all"><Mail size={20} /></div>
+              <div><p className="text-[10px] text-slate-500 uppercase font-bold">Email Pro</p><p className="text-sm font-medium">{ADMIN_CONTACT.email}</p></div>
+            </a>
+          </div>
+          <div className="flex items-center gap-6">
+            <a href="#" target="_blank"><img src={facebook} alt="Facebook" className="h-9 w-auto" /></a>
+            <a href="#" target="_blank"><img src={instagram} alt="Instagram" className="h-9 w-auto" /></a>
+            <a href="#" target="_blank"><img src={linkedin} alt="LinkedIn" className="h-9 w-auto" /></a>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function StepItem({ step, title, description }: { step: string; title: string; description: string }) {
+function StepItem({ num, title, desc }: { num: string; title: string; desc: string }) {
   return (
-    <div className="flex gap-4 items-start">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-xs font-bold text-white">{step}</div>
-      <div><p className="font-bold text-slate-900">{title}</p><p className="text-xs text-slate-500">{description}</p></div>
+    <div className="flex gap-6 group">
+      <span className="text-3xl font-black text-slate-200 group-hover:text-emerald-200 transition-colors leading-none">{num}</span>
+      <div><h4 className="font-bold text-slate-900 mb-1">{title}</h4><p className="text-sm text-slate-500">{desc}</p></div>
     </div>
   );
 }
 
-function SiteFooter() { return <footer className=" py-10 border-t border-slate-100 text-center text-dark">© {new Date().getFullYear()} NosyBe Lands — Global Land IMMO</footer>; }
+function Layout({ children }: { children: ReactNode }) { return <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">{children}</div>; }
+
+function GradientBackground() {
+  return (
+    <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden opacity-50">
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-100 blur-[120px]" />
+      <div className="absolute bottom-[10%] right-[-10%] w-[30%] h-[30%] rounded-full bg-sky-100 blur-[100px]" />
+    </div>
+  );
+}
+
+function SiteFooter() { return <footer className="py-12 border-t border-slate-100 text-center text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">© {new Date().getFullYear()} NosyBe Lands — Global Land Immo Madagascar</footer>; }
+
+function CookieBanner({ t }: { t: TranslationType }) {
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => { const consent = localStorage.getItem("cookie-consent"); if (!consent) setIsVisible(true); }, []);
+  const handleConsent = () => { localStorage.setItem("cookie-consent", "accepted"); setIsVisible(false); };
+  if (!isVisible) return null;
+  return (
+    <div className="fixed bottom-6 left-6 right-6 z-[100] md:left-auto md:w-96">
+      <div className="bg-slate-900 rounded-2xl p-6 shadow-2xl border border-white/10 text-white">
+        <h3 className="font-bold mb-2">🍪 {t.cookieTitle}</h3>
+        <p className="text-[10px] text-slate-400 mb-6">{t.cookieDesc}</p>
+        <div className="flex gap-3">
+          <button onClick={() => setIsVisible(false)} className="flex-1 text-[10px] font-bold text-slate-500 hover:text-white transition">{t.cookieDecline.toUpperCase()}</button>
+          <button onClick={handleConsent} className="flex-1 bg-emerald-500 py-2 rounded-lg text-slate-900 text-[10px] font-bold hover:bg-emerald-400 transition">{t.cookieAccept.toUpperCase()}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
