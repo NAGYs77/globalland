@@ -399,9 +399,9 @@ function ContactSection({ t }: { t: TranslationType }) {
             </a>
           </div>
           <div className="flex items-center gap-6">
-            <a href="#" target="_blank"><img src={facebook} alt="Facebook" className="h-9 w-auto" /></a>
-            <a href="#" target="_blank"><img src={instagram} alt="Instagram" className="h-9 w-auto" /></a>
-            <a href="#" target="_blank"><img src={linkedin} alt="LinkedIn" className="h-9 w-auto" /></a>
+            <a href="https://www.facebook.com/global.land.immo" target="_blank"><img src={facebook} alt="Facebook" className="h-9 w-auto" /></a>
+            <a href="https://www.instagram.com/global.land.immo/" target="_blank"><img src={instagram} alt="Instagram" className="h-9 w-auto" /></a>
+            <a href="https://www.linkedin.com/company/global-land-immo-madagascar/" target="_blank"><img src={linkedin} alt="LinkedIn" className="h-9 w-auto" /></a>
           </div>
         </div>
       </div>
