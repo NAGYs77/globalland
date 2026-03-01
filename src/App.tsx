@@ -1,5 +1,6 @@
 
 
+
 import type { ReactNode } from "react";
 import { useMemo, useState, useEffect } from "react";
 import { Search, User, Mail, Phone, MapPin, CheckCircle2 } from 'lucide-react';
@@ -9,6 +10,9 @@ import ter from './assets/ter.jpg';
 import facebook from './assets/facebook.png';
 import instagram from './assets/instagram.png';
 import linkedin from './assets/linkedin.png';
+
+// --- CONFIGURATION ---
+const ITEMS_PER_PAGE = 6; // Tu peux changer ce nombre pour afficher 4, 6, 8... terrains par page
 
 // --- TRADUCTIONS ---
 const translations = {
@@ -27,7 +31,8 @@ const translations = {
     step3Title: "Acquisition", step3Desc: "Accompagnement notarial et sécurisation de l'acte.",
     cookieTitle: "Un petit cookie pour la route ?", cookieDesc: "Ce site enregistre des cookies pour vous offrir la meilleure expérience de navigation possible.",
     cookieChoice: "Je choisis", cookieDecline: "Non merci", cookieAccept: "OK pour moi",
-    noResult: "Aucun terrain ne correspond à votre recherche."
+    noResult: "Aucun terrain ne correspond à votre recherche.",
+    prev: "Précédent", next: "Suivant", page: "Page"
   },
   en: {
     navTerrains: "Plots", navMethode: "Method", navContact: "Contact",
@@ -44,7 +49,8 @@ const translations = {
     step3Title: "Acquisition", step3Desc: "Notary support and securing the deed.",
     cookieTitle: "A little cookie for the road?", cookieDesc: "This site records cookies to offer you the best possible navigation experience.",
     cookieChoice: "I choose", cookieDecline: "No thanks", cookieAccept: "OK for me",
-    noResult: "No results found for your search."
+    noResult: "No results found for your search.",
+    prev: "Previous", next: "Next", page: "Page"
   },
   it: {
     navTerrains: "Terreni", navMethode: "Metodo", navContact: "Contatto",
@@ -61,7 +67,8 @@ const translations = {
     step3Title: "Acquisizione", step3Desc: "Supporto notarile e messa in sicurezza dell'atto.",
     cookieTitle: "Un piccolo cookie per la strada?", cookieDesc: "Questo sito registra i cookie per offrirti la meilleure esperienza di navigazione possible.",
     cookieChoice: "Scelgo", cookieDecline: "No grazie", cookieAccept: "OK per me",
-    noResult: "Nessun risultato trovato."
+    noResult: "Nessun risultato trovato.",
+    prev: "Precedente", next: "Successivo", page: "Pagina"
   }
 };
 
@@ -75,6 +82,10 @@ const MOCK_LISTINGS: LandListing[] = [
   { id: 2, title: "Terrain touristique pour écolodge", country: "Madagascar", city: "Nosy Be – Ambatoloaka", price: "5 000 €", size: "5 800 m²", category: "Touristique", tag: "Idéal projet hôtelier", imageUrl: "https://images.pexels.com/photos/325944/pexels-photo-325944.jpeg?auto=compress&cs=tinysrgb&w=1200" },
   { id: 3, title: "Terrain pour complexe hôtelier vue 180°", country: "Madagascar", city: "Nosy Be – Mont Passot", price: "6 000 €", size: "1,8 ha", category: "Touristique", tag: "Vue panoramique", imageUrl: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1200" },
   { id: 4, title: "Terrain résidentiel proche plage", country: "Madagascar", city: "Nosy Be – Madirokely", price: "4 000 €", size: "1 050 m²", category: "Résidentiel", imageUrl: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=1200" },
+  { id: 5, title: "Terrain commercial à nosy be", country: "Madagascar", city: "Antsirabe", price: "3 500 €", size: "2 100 m²", category: "Commercial", imageUrl: "https://images.pexels.com/photos/1427328/pexels-photo-1427328.jpeg?auto=compress&cs=tinysrgb&w=1300" },
+  { id: 6, title: "Terrain résidentiel à madirokely", country: "Madagascar", city: "Mahajanga – Ambatondrazaka", price: "3 200 €", size: "1 500 m²", category: "Résidentiel", imageUrl: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=1400" },
+  { id: 7, title: "Exemple Terrain supplémentaire", country: "Madagascar", city: "Nosy Be – Ambaro", price: "7 500 €", size: "4 000 m²", category: "Touristique", imageUrl: "https://images.pexels.com/photos/462162/pexels-photo-462162.jpeg?auto=compress&cs=tinysrgb&w=1500" },
+    { id: 8, title: "Exemple Terrain supplémentaire", country: "Madagascar", city: "Nosy Be – Ambaro", price: "7 500 €", size: "4 000 m²", category: "Touristique", imageUrl: "https://images.pexels.com/photos/462162/pexels-photo-462162.jpeg?auto=compress&cs=tinysrgb&w=1600" }  // Terrain ajouté pour tester la page 2
 ];
 
 const ADMIN_CONTACT = { name: "Santoni Folio", phone: "+261 32 29 587 15", email: "globallandimmo@gmail.com", };
@@ -96,7 +107,6 @@ export default function App() {
         <main className="relative z-10 space-y-20 pb-20 pt-10">
           <HeroSection t={t} />
           <StatsSection t={t} />
-          {/* IMPORTANT : On passe searchQuery ET setSearchQuery ici */}
           <ListingsSection t={t} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           <HowItWorksSection t={t} />
           <ContactSection t={t} />
@@ -163,6 +173,12 @@ function ListingsSection({ t, searchQuery, setSearchQuery }: {
   setSearchQuery: (s: string) => void 
 }) {
   const [sort, setSort] = useState<"price-asc" | "price-desc">("price-asc");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Revenir à la première page quand on fait une recherche ou qu'on trie
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, sort]);
 
   const filteredAndSortedListings = useMemo(() => {
     let result = [...MOCK_LISTINGS];
@@ -181,6 +197,13 @@ function ListingsSection({ t, searchQuery, setSearchQuery }: {
     });
   }, [sort, searchQuery]);
 
+  // Logique de pagination
+  const totalPages = Math.ceil(filteredAndSortedListings.length / ITEMS_PER_PAGE);
+  const currentItems = filteredAndSortedListings.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE, 
+    currentPage * ITEMS_PER_PAGE
+  );
+
   return (
     <section id="section-terrains" className="space-y-12">
       <div className="flex flex-col md:flex-row justify-between items-end gap-6">
@@ -197,29 +220,55 @@ function ListingsSection({ t, searchQuery, setSearchQuery }: {
       </div>
 
       {filteredAndSortedListings.length > 0 ? (
-        <div className="grid gap-8 md:grid-cols-2">
-          {filteredAndSortedListings.map((listing) => (
-            <article key={listing.id} className="group relative bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500">
-              <div className="aspect-video overflow-hidden">
-                <img src={listing.imageUrl} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              </div>
-              <div className="p-6 space-y-4">
-                <div className="flex justify-between items-start">
-                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase">{listing.category}</span>
-                  <p className="text-xl font-black text-slate-900">{listing.price}</p>
+        <>
+          {/* L'interface reste identique pour la grille ! */}
+          <div className="grid gap-8 md:grid-cols-2">
+            {currentItems.map((listing) => (
+              <article key={listing.id} className="group relative bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-500">
+                <div className="aspect-video overflow-hidden">
+                  <img src={listing.imageUrl} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
-                <h3 className="text-lg font-bold leading-tight">{listing.title}</h3>
-                <div className="flex items-center gap-2 text-slate-400 text-xs">
-                  <MapPin size={14} /> {listing.city}
+                <div className="p-6 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase">{listing.category}</span>
+                    <p className="text-xl font-black text-slate-900">{listing.price}</p>
+                  </div>
+                  <h3 className="text-lg font-bold leading-tight">{listing.title}</h3>
+                  <div className="flex items-center gap-2 text-slate-400 text-xs">
+                    <MapPin size={14} /> {listing.city}
+                  </div>
+                  <button onClick={() => scrollToSection('section-contact')} className="w-full py-3 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-emerald-500 transition-colors uppercase tracking-widest">{t.cardBtn}</button>
                 </div>
-                <button onClick={() => scrollToSection('section-contact')} className="w-full py-3 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-emerald-500 transition-colors uppercase tracking-widest">{t.cardBtn}</button>
-              </div>
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+
+          {/* Boutons de Pagination ajoutés ici */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-6 mt-12 pt-6 border-t border-slate-100">
+              <button 
+                disabled={currentPage === 1}
+                onClick={() => { setCurrentPage(prev => prev - 1); scrollToSection('section-terrains'); }}
+                className="px-6 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 disabled:opacity-30 disabled:hover:bg-transparent hover:bg-slate-50 transition-all"
+              >
+                ← {t.prev}
+              </button>
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                {t.page} {currentPage} / {totalPages}
+              </span>
+              <button 
+                disabled={currentPage === totalPages}
+                onClick={() => { setCurrentPage(prev => prev + 1); scrollToSection('section-terrains'); }}
+                className="px-6 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 disabled:opacity-30 disabled:hover:bg-transparent hover:bg-slate-50 transition-all"
+              >
+                {t.next} →
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <div className="text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-          <p className="text-slate-500 font-medium">{(t as any).noResult || "Aucun résultat trouvé."}</p>
+          <p className="text-slate-500 font-medium">{t.noResult || "Aucun résultat trouvé."}</p>
           <button onClick={() => setSearchQuery("")} className="mt-4 text-emerald-600 text-sm font-bold">Effacer la recherche</button>
         </div>
       )}
@@ -400,5 +449,3 @@ function CookieBanner({ t }: { t: TranslationType }) {
     </div>
   );
 }
-
-
