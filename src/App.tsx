@@ -468,11 +468,11 @@ function ContactSection({ t }: { t: TranslationType }) {
   
             <div className="pt-12 mt-12 border-t border-white/10 flex items-center justify-between">
               <div className="flex gap-4">
-                <a href="#" className="hover:scale-110 transition-transform"><img src={facebook} alt="FB" className="h-8 w-auto opacity-70 hover:opacity-100" /></a>
-                <a href="#" className="hover:scale-110 transition-transform"><img src={instagram} alt="IG" className="h-8 w-auto opacity-70 hover:opacity-100" /></a>
-                <a href="#" className="hover:scale-110 transition-transform"><img src={linkedin} alt="IN" className="h-8 w-auto opacity-70 hover:opacity-100" /></a>
+                <a href="#" className="hover:scale-110 transition-transform"><img src={facebook} alt="FB" className="h-8 " /></a>
+                <a href="#" className="hover:scale-110 transition-transform"><img src={instagram} alt="IG" className="h-8 " /></a>
+                <a href="#" className="hover:scale-110 transition-transform"><img src={linkedin} alt="IN" className="h-8 " /></a>
               </div>
-              <img src={ter} alt="Logo" className="h-10 w-auto grayscale opacity-30" />
+              <img src={ter} alt="Logo" className="h-10 " />
             </div>
           </div>
         </div>
