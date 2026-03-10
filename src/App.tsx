@@ -468,9 +468,9 @@ function ContactSection({ t }: { t: TranslationType }) {
   
             <div className="pt-12 mt-12 border-t border-white/10 flex items-center justify-between">
               <div className="flex gap-4">
-                <a href="#" className="hover:scale-110 transition-transform"><img src={facebook} alt="FB" className="h-8 " /></a>
-                <a href="#" className="hover:scale-110 transition-transform"><img src={instagram} alt="IG" className="h-8 " /></a>
-                <a href="#" className="hover:scale-110 transition-transform"><img src={linkedin} alt="IN" className="h-8 " /></a>
+                <a href="https://www.facebook.com/globallandimmo" className="hover:scale-110 transition-transform"><img src={facebook} alt="FB" className="h-8 " /></a>
+                <a href="https://www.instagram.com/globallandimmo/" className="hover:scale-110 transition-transform"><img src={instagram} alt="IG" className="h-8 " /></a>
+                <a href="https://www.linkedin.com/company/globallandimmo" className="hover:scale-110 transition-transform"><img src={linkedin} alt="IN" className="h-8 " /></a>
               </div>
               <img src={ter} alt="Logo" className="h-10 " />
             </div>
@@ -500,7 +500,7 @@ function GradientBackground() {
   );
 }
 
-function SiteFooter({ t }: { t: TranslationType }) { return <footer className="py-12 border-t text-center text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">© {new Date().getFullYear()} NosyBe Global Land Immo | {t.footerCredit}</footer>; }
+function SiteFooter({ t }: { t: TranslationType }) { return <footer className="py-12 border-t text-center text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">© {new Date().getFullYear()} NosyBe Global Land Immo   {t.footerCredit}</footer>; }
 
 function CookieBanner({ t }: { t: TranslationType }) {
   const [isVisible, setIsVisible] = useState(false);
