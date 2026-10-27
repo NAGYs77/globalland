@@ -24,13 +24,14 @@ export function ContactPage({ t }: any) {
     
     const formData = new FormData(e.currentTarget);
     const formProps = Object.fromEntries(formData);
+    const accessKey = import.meta.env.VITE_STATIC_FORMS_ACCESS_KEY; 
 
     // Préparation de l'objet pour Static Forms
     const data = {
       ...formProps,
       subject: "Nouveau message de Global Land Immo",
       replyTo: "@", // Recommandé par Static Forms pour la validation
-      accessKey: "sf_ce56fa3d4f4b90e4238d1e73" 
+      accessKey: accessKey
     };
 
     try {

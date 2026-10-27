@@ -29,7 +29,7 @@ const MOCK_LISTINGS = [
 
 export function ListingsSection({ t, searchQuery, onClear }: any) {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 6;
 
   // Fonction pour ouvrir Google Maps sur Nosy Be
   const openGoogleMaps = (location: string) => {
