@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { MapPin } from 'lucide-react';
 
@@ -9,6 +9,9 @@ import { MethodePage } from "./components/MethodePage";
 import { ContactPage } from "./components/ContactPage";
 import { SiteFooter } from "./components/SiteFooter";
 import { CookieBanner } from "./components/CookieBanner";
+
+// --- IMAGE DE FOND (la même que dans la page des listings) ---
+import heroImg from './assets/1.png';
 
 // --- TYPES & TRANSLATIONS ---
 const translations = {
@@ -116,22 +119,42 @@ export type TranslationType = typeof translations.fr;
 
 // --- COMPOSANTS INTERNES ---
 
+// Image de fond de la zone centrale (entre la navbar et le footer),
+// visible uniquement sur la page d'accueil, sans voile blanc
+function HomeBackground() {
+  return (
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+      <img
+        src={heroImg}
+        alt=""
+        className="w-full h-full object-cover opacity-80"
+      />
+      {/* Léger voile sombre pour garder le texte blanc lisible */}
+      <div className="absolute inset-0 bg-black/20" />
+    </div>
+  );
+}
+
 function HeroSection({ t }: { t: TranslationType }) {
   return (
     <section className="text-center space-y-8 py-10">
       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold uppercase tracking-widest">
         <MapPin size={12} /> Nosy Be, Madagascar
       </div>
-      <h1 className="mx-auto max-w-4xl text-5xl font-black tracking-tighter sm:text-7xl">
+      <h1 className="mx-auto max-w-4xl text-5xl font-black tracking-tighter text-white drop-shadow-lg sm:text-7xl">
         {t.heroTitle} <br/>
-        <span className="text-emerald-500">{t.heroSub}</span>
+        <span className="text-emerald-300">{t.heroSub}</span>
       </h1>
-      <p className="mx-auto max-w-2xl text-slate-500 text-lg leading-relaxed">
+      <p className="mx-auto max-w-2xl text-white/90 text-lg leading-relaxed drop-shadow">
         {t.heroDesc}
       </p>
-      <button className="rounded-2xl bg-slate-900 px-10 py-4 text-sm font-bold text-white shadow-2xl hover:bg-emerald-600 transition-all">
+      {/* Le bouton mène à la page Terrains (listings) */}
+      <Link
+        to="/terrains"
+        className="inline-block rounded-2xl bg-slate-900 px-10 py-4 text-sm font-bold text-white shadow-2xl hover:bg-emerald-600 transition-all"
+      >
         {t.heroBtn}
-      </button>
+      </Link>
     </section>
   );
 }
@@ -145,7 +168,7 @@ function StatsSection({ t }: { t: TranslationType }) {
   return (
     <section className="grid gap-6 sm:grid-cols-3">
       {stats.map((stat) => (
-        <div key={stat.label} className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 text-center hover:bg-white transition-all">
+        <div key={stat.label} className="p-8 rounded-[2.5rem] bg-slate-50/80 backdrop-blur-sm border border-slate-100 text-center hover:bg-white transition-all">
           <p className="text-4xl font-black">{stat.value}</p>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">{stat.label}</p>
         </div>
@@ -163,18 +186,23 @@ function GradientBackground() {
   );
 }
 
-export default function App() {
+function AppContent() {
   const [lang, setLang] = useState<Language>("fr");
   const [searchQuery, setSearchQuery] = useState("");
   const t = translations[lang];
+  const { pathname } = useLocation();
+  const isHome = pathname === "/";
 
   return (
-    <Router>
-      <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900">
-        <GradientBackground />
-        
-        <Navbar t={t} currentLang={lang} setLang={setLang} onSearch={setSearchQuery} />
-        
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900">
+      <GradientBackground />
+
+      <Navbar t={t} currentLang={lang} setLang={setLang} onSearch={setSearchQuery} />
+
+      {/* Zone centrale : l'image reste ici, entre la navbar et le footer */}
+      <div className={`relative ${isHome ? "min-h-[80vh]" : ""}`}>
+        {isHome && <HomeBackground />}
+
         <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative z-10 space-y-20 pb-20 pt-10">
           <Routes>
             <Route path="/" element={
@@ -194,10 +222,18 @@ export default function App() {
             } />
           </Routes>
         </main>
-
-        <SiteFooter t={t} />
-        <CookieBanner t={t} />
       </div>
+
+      <SiteFooter t={t} />
+      <CookieBanner t={t} />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

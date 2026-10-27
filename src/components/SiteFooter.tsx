@@ -5,7 +5,7 @@ import facebook from '../assets/facebook.png';
 import instagram from '../assets/instagram.png';
 import linkedin from '../assets/linkedin.png';
 
-export function SiteFooter({ t }: any) {
+export function SiteFooter({ }: any) {
   const ADMIN_CONTACT = {
     phone: "+261 32 29 587 15",
     email: "globallandimmo@gmail.com",
@@ -66,8 +66,8 @@ export function SiteFooter({ t }: any) {
 
         {/* Ligne de Copyright et Crédit */}
         <div className="pt-8 border-t border-white/5 w-full text-center">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-            © {new Date().getFullYear()} NosyBe Global Land Immo. Tous droit reserver. It Consulting Nosy-be{t.footerCredit}
+          <p className="text-[12px] font-bold text-slate-400  ">
+            © {new Date().getFullYear()} Nosy-Be Global Land Immo. Tous droit reserver. By NAGY
           </p>
         </div>
       </div>

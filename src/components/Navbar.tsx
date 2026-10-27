@@ -111,7 +111,7 @@ export function Navbar({ t, currentLang, setLang, onSearch }: any) {
           
           <div className="p-6 bg-slate-50/50">
             <p className="text-[10px] text-center font-bold text-slate-400 uppercase tracking-widest">
-              © 2026 NosyBe Lands — Expertise Immobilière
+              Expertise Immobilière
             </p>
           </div>
         </div>
